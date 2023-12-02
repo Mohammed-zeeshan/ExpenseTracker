@@ -1,7 +1,8 @@
 import axios from 'axios';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import Items from './Items';
 
-const ExpenseForm = () => {
+const ExpenseForm = (props) => {
     const amountInputRef = useRef();
     const descriptionInputRef = useRef();
     const categoryInputRef = useRef();
@@ -34,6 +35,7 @@ const ExpenseForm = () => {
     const submitHandler = async(event) => {
         event.preventDefault();
         const data = {
+            id: Math.random().toString(),
             amount: amountInputRef.current.value,
             description: descriptionInputRef.current.value, 
             category: categoryInputRef.current.value,
@@ -46,10 +48,37 @@ const ExpenseForm = () => {
             console.log(error.message)
         }
     }
+
+    const updateHandler = async(number) => {
+        const data = {
+            amount: amountInputRef.current.value,
+            description: descriptionInputRef.current.value, 
+            category: categoryInputRef.current.value,
+        }
+        try {
+            const response = await axios.put(`https://track-expense-4f458-default-rtdb.firebaseio.com/Expenses/${number}.json`,data)
+            console.log(response.data);
+        }
+        catch (err) {
+            console.log(err.message)
+        }
+    }
+
     let content = <p></p>;
 
     if (items.length > 0){
-        <p>{items.amount} - {items.description} - {items.category}</p>
+        content = items.map((data) => (
+            <Items 
+                key={data.id}
+                id={data.id}
+                amount={data.amount}
+                description={data.description}
+                category={data.category}
+                ids={updateHandler}
+            >
+                {props.children}
+            </Items>
+        ))
     }
   return (
     <section>
