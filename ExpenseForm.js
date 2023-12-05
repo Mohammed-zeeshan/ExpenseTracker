@@ -1,8 +1,11 @@
 import axios from 'axios';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Items from './Items';
+import { useDispatch } from 'react-redux';
+import { expenseActions } from '../pages/expenses-reducer';
 
 const ExpenseForm = (props) => {
+    const dispatch = useDispatch();
     const amountInputRef = useRef();
     const descriptionInputRef = useRef();
     const categoryInputRef = useRef();
@@ -40,6 +43,7 @@ const ExpenseForm = (props) => {
             description: descriptionInputRef.current.value, 
             category: categoryInputRef.current.value,
         }
+        dispatch(expenseActions.show(data))
         try {
             const response = await axios.post('https://track-expense-4f458-default-rtdb.firebaseio.com/Expenses.json',data)
             console.log(response.data);
@@ -55,6 +59,7 @@ const ExpenseForm = (props) => {
             description: descriptionInputRef.current.value, 
             category: categoryInputRef.current.value,
         }
+
         try {
             const response = await axios.put(`https://track-expense-4f458-default-rtdb.firebaseio.com/Expenses/${number}.json`,data)
             console.log(response.data);
@@ -80,21 +85,23 @@ const ExpenseForm = (props) => {
             </Items>
         ))
     }
+    const premiumHandler = () => {}
   return (
     <section>
         <form onSubmit={submitHandler}>
-            <label>Amount</label>
-            <input type='number' ref={amountInputRef} required />
-            <label>Description</label>
-            <input type='text' ref={descriptionInputRef} required />
-            <label>Category</label>
+            <div style={{padding: 5}}><label>Amount</label>
+            <input type='number' ref={amountInputRef} required /></div>
+            <div style={{padding: 5}}><label>Description</label>
+            <input type='text' ref={descriptionInputRef} required /></div>
+            <div style={{padding: 5}}><label>Category</label>
                 <select ref={categoryInputRef} required >
                     <option>Food</option>
                     <option>Fuel</option>
                     <option>Salary</option>
-                </select>
+                </select></div>
             <button>Add</button>
         </form>
+        <button onClick={premiumHandler}>Premium</button>
         {content}
     </section>
   )
